@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>KommUnikation – Kommunikationshilfe</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" href="icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header id="app-header">
+        <button id="btn-back" class="header-btn" aria-label="Zurück" hidden>
+            <span class="back-arrow">&#8592;</span>
+        </button>
+        <h1 id="page-title">KommUnikation</h1>
+        <button id="btn-settings" class="header-btn" aria-label="Einstellungen">
+            <span class="settings-icon">&#9881;</span>
+        </button>
+    </header>
+
+    <main id="grid-container" class="grid" role="main">
+        <!-- Dynamically filled by JS -->
+    </main>
+
+    <!-- Settings / Edit Modal -->
+    <div id="settings-modal" class="modal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Einstellungen</h2>
+                <button id="btn-close-modal" class="close-btn" aria-label="Schließen">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div id="edit-modal" class="modal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="edit-modal-title">Element bearbeiten</h2>
+                <button id="btn-close-edit" class="close-btn" aria-label="Schließen">&times;</button>
+            </div>
+            <div id="edit-modal-body" class="modal-body">
+                <div class="edit-section">
+                    <h3>Bild ändern</h3>
+                    <div id="edit-image-preview" class="edit-preview"></div>
+                    <label class="file-upload-btn">
+                        📷 Eigenes Bild wählen
+                        <input type="file" id="edit-image-input" accept="image/*" hidden>
+                    </label>
+                    <button id="btn-reset-image" class="secondary-btn">Standard-Bild wiederherstellen</button>
+                </div>
+                <div class="edit-section">
+                    <h3>Text ändern</h3>
+                    <input type="text" id="edit-label-input" class="text-input" placeholder="Beschriftung">
+                    <input type="text" id="edit-speech-input" class="text-input" placeholder="Gesprochener Text">
+                </div>
+                <div class="edit-section">
+                    <h3>Sound ändern</h3>
+                    <button id="btn-record" class="record-btn">🎙️ Aufnehmen</button>
+                    <button id="btn-stop-record" class="record-btn" hidden>⏹️ Stopp</button>
+                    <button id="btn-play-custom" class="secondary-btn" hidden>▶️ Anhören</button>
+                    <button id="btn-reset-sound" class="secondary-btn">Standard-Sound wiederherstellen</button>
+                    <div id="recording-status" class="recording-status"></div>
+                </div>
+                <div class="edit-actions">
+                    <button id="btn-save-edit" class="primary-btn">💾 Speichern</button>
+                    <button id="btn-cancel-edit" class="secondary-btn">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
