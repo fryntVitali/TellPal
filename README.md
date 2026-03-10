@@ -1,8 +1,8 @@
-# KommUnikation 💬
+# Tell Pal 💬
 
-**AAC-Kommunikationshilfe für Menschen, die nicht sprechen können.**
+**AAC communication aid for people who cannot speak.**
 
-KommUnikation ist eine webbasierte App (Progressive Web App), mit der Nutzer durch Antippen von Symbolen und Bildern ihre Bedürfnisse mitteilen können. Die App spricht den gewählten Begriff per Text-to-Speech laut aus.
+Tell Pal ist eine webbasierte App (Progressive Web App), mit der Nutzer durch Antippen von Symbolen und Bildern ihre Bedürfnisse mitteilen können. Die App spricht den gewählten Begriff per Text-to-Speech laut aus.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![PWA](https://img.shields.io/badge/PWA-ready-brightgreen.svg)
@@ -12,7 +12,7 @@ KommUnikation ist eine webbasierte App (Progressive Web App), mit der Nutzer dur
 
 ## ✨ Features
 
-- **Symbol-Kommunikation** – Tippe auf ein Bild/Emoji, um einen Satz laut aussprechen zu lassen
+- **Symbol-Kommunikation** – Tippe auf ein Bild/Emoji, um einen Satz aussprechen zu lassen
 - **Mehrere Ebenen** – Kategorien → Unterkategorien → Einzelsymbole (z. B. Essen → Obst → Apfel)
 - **11 Kategorien** – Essen, Trinken, Spielen, Raus gehen, Toilette, Schlafen, Gefühle, Antworten, Schmerzen, HILFE
 - **5 Sprachen** – Deutsch 🇩🇪, Englisch 🇬🇧, Türkisch 🇹🇷, Ukrainisch 🇺🇦, Russisch 🇷🇺
@@ -51,7 +51,7 @@ npx serve .
 ### Option 3: Online nutzen (GitHub Pages)
 Die App ist live verfügbar unter:
 
-**https://fryntvitali.github.io/KommunikationsApp/**
+**https://fryntvitali.github.io/TellPal/**
 
 Einfach im Browser öffnen — funktioniert auf jedem Gerät.
 
@@ -78,7 +78,7 @@ Die App funktioniert danach auch **offline** — alle Daten werden lokal gespeic
 ## 📁 Projektstruktur
 
 ```
-KommunikationsApp/
+TellPal/
 ├── index.html          # Haupt-HTML (App-Shell)
 ├── manifest.json       # PWA-Manifest
 ├── sw.js               # Service Worker (Offline-Cache)

@@ -1,10 +1,10 @@
 /**
- * KommUnikation – IndexedDB Storage
+ * Tell Pal – IndexedDB Storage
  * Speichert benutzerdefinierte Bilder, Sounds und Labels
  */
 
 const StorageManager = (() => {
-    const DB_NAME = 'KommUnikationDB';
+    const DB_NAME = 'TellPalDB';
     const DB_VERSION = 1;
     const STORE_NAME = 'customizations';
     let db = null;

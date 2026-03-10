@@ -1,7 +1,7 @@
 {
-    "name": "KommUnikation – Kommunikationshilfe",
-    "short_name": "KommUnikation",
-    "description": "AAC Kommunikations-App für Menschen, die nicht sprechen können",
+    "name": "Tell Pal – Communication Aid",
+    "short_name": "Tell Pal",
+    "description": "AAC communication app for people who cannot speak",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#f0f4f8",

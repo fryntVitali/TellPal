@@ -1,5 +1,5 @@
 /* =============================================
-   KommUnikation – Communication Aid App
+   Tell Pal – Communication Aid App
    ============================================= */
 
 :root {
@@ -77,6 +77,12 @@ body {
     transition: background var(--transition);
 }
 
+.header-btn-placeholder {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
 .header-btn:hover {
     background: rgba(255, 255, 255, 0.3);
 }
@@ -85,13 +91,33 @@ body {
     background: rgba(255, 255, 255, 0.4);
 }
 
-.header-btn[hidden] {
-    visibility: hidden;
+/* Back card – same shape as symbol cards, shrinks first */
+.back-card {
+    background: var(--header-bg);
+    border-color: var(--header-bg);
+    color: var(--header-text);
+    cursor: pointer;
+    min-height: 80px;
+    aspect-ratio: auto;
 }
 
-.back-arrow {
-    font-size: 1.6rem;
-    font-weight: bold;
+.back-card:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    box-shadow: var(--card-hover);
+}
+
+.back-card:active {
+    transform: scale(0.95);
+}
+
+.back-card .card-emoji {
+    font-size: 3rem;
+}
+
+.back-card .card-label {
+    color: var(--header-text);
+    font-weight: 700;
 }
 
 .settings-icon {
@@ -198,6 +224,46 @@ body.edit-mode .card-edit-btn {
     display: flex;
 }
 
+/* Add new symbol card (edit mode only) */
+.add-card {
+    border: 3px dashed var(--accent);
+    background: #eef2ff;
+    cursor: pointer;
+}
+
+.add-card:hover {
+    background: #dbeafe;
+    box-shadow: var(--card-hover);
+}
+
+.add-card .card-emoji {
+    font-size: 2.8rem;
+    opacity: 0.7;
+}
+
+.add-card .card-label {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Danger button */
+.danger-btn {
+    padding: 10px 16px;
+    background: #fef2f2;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.danger-btn:hover {
+    background: #fee2e2;
+}
+
 body.edit-mode .card:active {
     transform: none;
 }
@@ -226,6 +292,20 @@ body.edit-mode .card:active {
 
 .card.help-card .card-emoji {
     font-size: 4rem;
+}
+
+/* Offline info */
+.offline-info {
+    line-height: 1.5;
+}
+
+.offline-platform {
+    margin-bottom: 14px;
+    padding: 14px;
+    background: var(--bg-color);
+    border-radius: 12px;
+    font-size: 0.92rem;
+    line-height: 1.7;
 }
 
 /* Modal */
@@ -523,8 +603,9 @@ body.edit-mode .card:active {
 
 .edit-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
-    justify-content: flex-end;
+    align-items: center;
     padding-top: 10px;
 }
 

@@ -1,10 +1,9 @@
 /**
- * KommUnikation – i18n Internationalization
+ * Tell Pal – i18n Internationalization
  * Active: de, en, tr, uk, ru
- * Planned: fr, es, it, pt, nl, da, sv, no, fi, is, pl, fa, ar, cs, hr, sr, bs
  */
 const I18N = (() => {
-    const STORAGE_KEY = 'kommunikation-lang';
+    const STORAGE_KEY = 'tellpal-lang';
 
     const languages = {
         de: { name: 'Deutsch', flag: '🇩🇪', speechLang: 'de-DE' },
@@ -16,7 +15,7 @@ const I18N = (() => {
 
     const ui = {
         de: {
-            appTitle: 'KommUnikation',
+            appTitle: 'Tell Pal',
             settings: 'Einstellungen',
             editMode: 'Bearbeitungsmodus',
             resetAll: 'Alle Anpassungen zurücksetzen',
@@ -42,9 +41,21 @@ const I18N = (() => {
             micDenied: 'Mikrofon-Zugriff verweigert.',
             imageTooLarge: 'Bild zu groß (max. 2 MB).',
             language: 'Sprache',
+            newSymbol: '➕ Neues Symbol anlegen',
+            newSymbolTitle: 'Neues Symbol anlegen',
+            deleteSymbol: '🗑️ Symbol löschen',
+            deleteConfirm: 'Dieses Symbol wirklich löschen?',
+            offlineInfo: 'Offline-Nutzung',
+            offlineTitle: 'App offline nutzen',
+            offlineIntro: 'Tell Pal kann als App installiert werden und funktioniert dann komplett ohne Internet.',
+            offlineAndroid: '<strong>Android (Chrome)</strong><br>1. Öffne Tell Pal in Chrome<br>2. Tippe auf ⋮ (Menü oben rechts)<br>3. Wähle „Zum Startbildschirm hinzufügen“ oder „App installieren“<br>4. Bestätige mit „Installieren“',
+            offlineIOS: '<strong>iPhone / iPad (Safari)</strong><br>1. Öffne Tell Pal in Safari<br>2. Tippe auf das Teilen-Symbol (Quadrat mit Pfeil nach oben)<br>3. Scrolle nach unten und wähle „Zum Home-Bildschirm“<br>4. Tippe auf „Hinzufügen“',
+            offlineWindows: '<strong>Windows (Chrome / Edge)</strong><br>1. Öffne Tell Pal im Browser<br>2. Klicke auf das Installieren-Symbol in der Adressleiste (⊕) oder gehe zu ⋮ → „App installieren“<br>3. Bestätige mit „Installieren“',
+            offlineMac: '<strong>macOS (Chrome / Edge / Safari)</strong><br>1. Öffne Tell Pal im Browser<br>2. Klicke auf das Installieren-Symbol in der Adressleiste oder gehe zu ⋮ → „App installieren“<br>3. Bestätige mit „Installieren“',
+            offlineHint: 'Nach der Installation erscheint Tell Pal als eigene App auf deinem Gerät und funktioniert auch ohne Internetverbindung.',
         },
         en: {
-            appTitle: 'KommUnikation',
+            appTitle: 'Tell Pal',
             settings: 'Settings',
             editMode: 'Edit Mode',
             resetAll: 'Reset all customizations',
@@ -70,9 +81,21 @@ const I18N = (() => {
             micDenied: 'Microphone access denied.',
             imageTooLarge: 'Image too large (max. 2 MB).',
             language: 'Language',
+            newSymbol: '➕ Create new symbol',
+            newSymbolTitle: 'Create new symbol',
+            deleteSymbol: '🗑️ Delete symbol',
+            deleteConfirm: 'Really delete this symbol?',
+            offlineInfo: 'Offline usage',
+            offlineTitle: 'Use app offline',
+            offlineIntro: 'Tell Pal can be installed as an app and works completely without internet.',
+            offlineAndroid: '<strong>Android (Chrome)</strong><br>1. Open Tell Pal in Chrome<br>2. Tap ⋮ (menu, top right)<br>3. Select "Add to Home screen" or "Install app"<br>4. Confirm with "Install"',
+            offlineIOS: '<strong>iPhone / iPad (Safari)</strong><br>1. Open Tell Pal in Safari<br>2. Tap the Share icon (square with arrow)<br>3. Scroll down and choose "Add to Home Screen"<br>4. Tap "Add"',
+            offlineWindows: '<strong>Windows (Chrome / Edge)</strong><br>1. Open Tell Pal in the browser<br>2. Click the install icon in the address bar (⊕) or go to ⋮ → "Install app"<br>3. Confirm with "Install"',
+            offlineMac: '<strong>macOS (Chrome / Edge / Safari)</strong><br>1. Open Tell Pal in the browser<br>2. Click the install icon in the address bar or go to ⋮ → "Install app"<br>3. Confirm with "Install"',
+            offlineHint: 'After installation, Tell Pal appears as its own app on your device and works without an internet connection.',
         },
         tr: {
-            appTitle: 'KommUnikation',
+            appTitle: 'Tell Pal',
             settings: 'Ayarlar',
             editMode: 'Düzenleme Modu',
             resetAll: 'Tüm özelleştirmeleri sıfırla',
@@ -98,9 +121,21 @@ const I18N = (() => {
             micDenied: 'Mikrofon erişimi reddedildi.',
             imageTooLarge: 'Resim çok büyük (maks. 2 MB).',
             language: 'Dil',
+            newSymbol: '➕ Yeni sembol oluştur',
+            newSymbolTitle: 'Yeni sembol oluştur',
+            deleteSymbol: '🗑️ Sembolü sil',
+            deleteConfirm: 'Bu sembolü silmek istiyor musunuz?',
+            offlineInfo: 'Çevrimdışı kullanım',
+            offlineTitle: 'Uygulamayı çevrimdışı kullan',
+            offlineIntro: 'Tell Pal bir uygulama olarak kurulabilir ve internet olmadan çalışır.',
+            offlineAndroid: '<strong>Android (Chrome)</strong><br>1. Tell Pal\'ı Chrome\'da açın<br>2. ⋮ (menü, sağ üst) üzerine dokunun<br>3. "Ana ekrana ekle" veya "Uygulamayı yükle" seçin<br>4. "Yükle" ile onaylayın',
+            offlineIOS: '<strong>iPhone / iPad (Safari)</strong><br>1. Tell Pal\'ı Safari\'de açın<br>2. Paylaş simgesine (ok ile kare) dokunun<br>3. Aşağı kaydırın ve "Ana Ekrana Ekle" seçin<br>4. "Ekle" ye dokunun',
+            offlineWindows: '<strong>Windows (Chrome / Edge)</strong><br>1. Tell Pal\'ı tarayıcıda açın<br>2. Adres çubuğundaki yükleme simgesine (⊕) tıklayın veya ⋮ → "Uygulamayı yükle"<br>3. "Yükle" ile onaylayın',
+            offlineMac: '<strong>macOS (Chrome / Edge / Safari)</strong><br>1. Tell Pal\'ı tarayıcıda açın<br>2. Adres çubuğundaki yükleme simgesine tıklayın veya ⋮ → "Uygulamayı yükle"<br>3. "Yükle" ile onaylayın',
+            offlineHint: 'Kurulumdan sonra Tell Pal cihazınızda kendi uygulaması olarak görünür ve internet bağlantısı olmadan çalışır.',
         },
         uk: {
-            appTitle: 'KommUnikation',
+            appTitle: 'Tell Pal',
             settings: 'Налаштування',
             editMode: 'Режим редагування',
             resetAll: 'Скинути всі налаштування',
@@ -126,9 +161,21 @@ const I18N = (() => {
             micDenied: 'Доступ до мікрофона заборонено.',
             imageTooLarge: 'Зображення завелике (макс. 2 МБ).',
             language: 'Мова',
+            newSymbol: '➕ Створити новий символ',
+            newSymbolTitle: 'Створити новий символ',
+            deleteSymbol: '🗑️ Видалити символ',
+            deleteConfirm: 'Справді видалити цей символ?',
+            offlineInfo: 'Офлайн-використання',
+            offlineTitle: 'Використовувати додаток офлайн',
+            offlineIntro: 'Tell Pal можна встановити як додаток, і він працює повністю без інтернету.',
+            offlineAndroid: '<strong>Android (Chrome)</strong><br>1. Відкрийте Tell Pal у Chrome<br>2. Натисніть ⋮ (меню, вгорі справа)<br>3. Оберіть «Додати на головний екран» або «Встановити додаток»<br>4. Підтвердіть «Встановити»',
+            offlineIOS: '<strong>iPhone / iPad (Safari)</strong><br>1. Відкрийте Tell Pal у Safari<br>2. Натисніть значок «Поділитися» (квадрат зі стрілкою)<br>3. Прокрутіть вниз і оберіть «На Головний екран»<br>4. Натисніть «Додати»',
+            offlineWindows: '<strong>Windows (Chrome / Edge)</strong><br>1. Відкрийте Tell Pal у браузері<br>2. Натисніть значок встановлення в адресному рядку (⊕) або перейдіть до ⋮ → «Встановити додаток»<br>3. Підтвердіть «Встановити»',
+            offlineMac: '<strong>macOS (Chrome / Edge / Safari)</strong><br>1. Відкрийте Tell Pal у браузері<br>2. Натисніть значок встановлення в адресному рядку або перейдіть до ⋮ → «Встановити додаток»<br>3. Підтвердіть «Встановити»',
+            offlineHint: 'Після встановлення Tell Pal з\'явиться як окремий додаток на вашому пристрої і працюватиме без інтернету.',
         },
         ru: {
-            appTitle: 'KommUnikation',
+            appTitle: 'Tell Pal',
             settings: 'Настройки',
             editMode: 'Режим редактирования',
             resetAll: 'Сбросить все настройки',
@@ -154,6 +201,18 @@ const I18N = (() => {
             micDenied: 'Доступ к микрофону запрещён.',
             imageTooLarge: 'Изображение слишком большое (макс. 2 МБ).',
             language: 'Язык',
+            newSymbol: '➕ Создать новый символ',
+            newSymbolTitle: 'Создать новый символ',
+            deleteSymbol: '🗑️ Удалить символ',
+            deleteConfirm: 'Действительно удалить этот символ?',
+            offlineInfo: 'Офлайн-использование',
+            offlineTitle: 'Использовать приложение офлайн',
+            offlineIntro: 'Tell Pal можно установить как приложение, и оно работает полностью без интернета.',
+            offlineAndroid: '<strong>Android (Chrome)</strong><br>1. Откройте Tell Pal в Chrome<br>2. Нажмите ⋮ (меню, вверху справа)<br>3. Выберите «Добавить на главный экран» или «Установить приложение»<br>4. Подтвердите «Установить»',
+            offlineIOS: '<strong>iPhone / iPad (Safari)</strong><br>1. Откройте Tell Pal в Safari<br>2. Нажмите значок «Поделиться» (квадрат со стрелкой)<br>3. Прокрутите вниз и выберите «На экран Домой»<br>4. Нажмите «Добавить»',
+            offlineWindows: '<strong>Windows (Chrome / Edge)</strong><br>1. Откройте Tell Pal в браузере<br>2. Нажмите значок установки в адресной строке (⊕) или перейдите в ⋮ → «Установить приложение»<br>3. Подтвердите «Установить»',
+            offlineMac: '<strong>macOS (Chrome / Edge / Safari)</strong><br>1. Откройте Tell Pal в браузере<br>2. Нажмите значок установки в адресной строке или перейдите в ⋮ → «Установить приложение»<br>3. Подтвердите «Установить»',
+            offlineHint: 'После установки Tell Pal появится как отдельное приложение на вашем устройстве и будет работать без интернета.',
         },
     };
 

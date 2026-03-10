@@ -1,16 +1,17 @@
 /**
- * KommUnikation – Hauptanwendungslogik (mit i18n)
+ * Tell Pal – Hauptanwendungslogik (mit i18n)
  */
 const App = (() => {
     let navigationStack = [];
     let editMode = false;
     let currentEditItem = null;
+    let isCreatingNew = false;
     let mediaRecorder = null;
     let recordedChunks = [];
     let customizationsCache = {};
+    let customItemsMap = {}; // parentId -> [items] for user-created symbols
 
     const grid = document.getElementById('grid-container');
-    const btnBack = document.getElementById('btn-back');
     const btnSettings = document.getElementById('btn-settings');
     const pageTitle = document.getElementById('page-title');
     const settingsModal = document.getElementById('settings-modal');
@@ -21,6 +22,7 @@ const App = (() => {
     async function init() {
         await StorageManager.open();
         await loadCustomizations();
+        await loadCustomItems();
         renderLevel(APP_DATA.categories, I18N.t('appTitle'));
         bindGlobalEvents();
     }
@@ -29,6 +31,15 @@ const App = (() => {
         const all = await StorageManager.getAllCustomizations();
         customizationsCache = {};
         for (const item of all) customizationsCache[item.id] = item;
+    }
+
+    async function loadCustomItems() {
+        const stored = localStorage.getItem('tellpal-custom-items');
+        customItemsMap = stored ? JSON.parse(stored) : {};
+    }
+
+    function saveCustomItems() {
+        localStorage.setItem('tellpal-custom-items', JSON.stringify(customItemsMap));
     }
 
     // ==================== i18n helpers ====================
@@ -44,16 +55,100 @@ const App = (() => {
     }
 
     // ==================== Rendering ====================
+    function getItemsWithCustom(items) {
+        // Find the parent id to look up custom items
+        const parentId = findParentId(items);
+        const customItems = parentId && customItemsMap[parentId] ? customItemsMap[parentId] : [];
+        return [...items, ...customItems];
+    }
+
+    function findParentId(items) {
+        // If these are the root categories, parent is 'root'
+        if (items === APP_DATA.categories) return 'root';
+        function search(parent, parentId) {
+            for (const item of parent) {
+                if (item.items === items) return item.id;
+                if (item.items) {
+                    const found = search(item.items, item.id);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+        // Also search in custom items
+        const fromData = search(APP_DATA.categories, 'root');
+        if (fromData) return fromData;
+        // Check custom items too
+        for (const [pid, citems] of Object.entries(customItemsMap)) {
+            for (const ci of citems) {
+                if (ci.items === items) return ci.id;
+            }
+        }
+        return 'root';
+    }
+
+    let currentParentId = 'root';
+
     function renderLevel(items, title) {
         grid.innerHTML = '';
         pageTitle.textContent = title;
-        btnBack.hidden = navigationStack.length === 0;
-        items.forEach((item, i) => {
+        currentParentId = findParentId(items);
+        const allItems = getItemsWithCustom(items);
+        let offset = 0;
+        // Insert back card as first element when not at root
+        if (navigationStack.length > 0) {
+            const backCard = createBackCard();
+            backCard.style.animationDelay = '0s';
+            grid.appendChild(backCard);
+            offset = 1;
+        }
+        allItems.forEach((item, i) => {
             const card = createCard(item);
-            card.style.animationDelay = `${i * 0.02}s`;
+            card.style.animationDelay = `${(i + offset) * 0.02}s`;
             grid.appendChild(card);
         });
+        // Add "new symbol" card in edit mode
+        if (editMode) {
+            const addCard = createAddCard();
+            addCard.style.animationDelay = `${(allItems.length + offset) * 0.02}s`;
+            grid.appendChild(addCard);
+        }
         grid.scrollTop = 0;
+    }
+
+    function createBackCard() {
+        const card = document.createElement('div');
+        card.className = 'card back-card';
+        const arrow = document.createElement('div');
+        arrow.className = 'card-emoji';
+        arrow.textContent = '⬅️';
+        card.appendChild(arrow);
+        const label = document.createElement('div');
+        label.className = 'card-label';
+        label.textContent = I18N.getLang() === 'de' ? 'Zurück' :
+            I18N.getLang() === 'en' ? 'Back' :
+            I18N.getLang() === 'tr' ? 'Geri' :
+            I18N.getLang() === 'uk' ? 'Назад' :
+            I18N.getLang() === 'ru' ? 'Назад' : 'Zurück';
+        card.appendChild(label);
+        card.addEventListener('click', goBack);
+        return card;
+    }
+    }
+
+    function createAddCard() {
+        const card = document.createElement('div');
+        card.className = 'card add-card';
+        const emoji = document.createElement('div');
+        emoji.className = 'card-emoji';
+        emoji.textContent = '➕';
+        card.appendChild(emoji);
+        const label = document.createElement('div');
+        label.className = 'card-label';
+        label.textContent = I18N.t('newSymbol');
+        card.appendChild(label);
+        card.addEventListener('click', openCreateModal);
+        return card;
     }
 
     function createCard(item) {
@@ -90,12 +185,22 @@ const App = (() => {
         editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(item); });
         card.appendChild(editBtn);
 
-        card.addEventListener('click', () => { if (!editMode) handleCardTap(item, card); });
+        card.addEventListener('click', () => handleCardTap(item, card));
         return card;
     }
 
     // ==================== Navigation & Speech ====================
     function handleCardTap(item, cardElement) {
+        // In edit mode: only allow navigation to sub-levels, no speech
+        if (editMode) {
+            if (item.items && item.items.length > 0) {
+                const currentItems = navigationStack.length === 0 ? APP_DATA.categories : null;
+                navigationStack.push({ items: currentItems || getCurrentDisplayedItems(), title: pageTitle.textContent });
+                renderLevel(item.items, itemLabel(item));
+            }
+            return;
+        }
+
         cardElement.classList.add('speaking');
         setTimeout(() => cardElement.classList.remove('speaking'), 600);
 
@@ -116,8 +221,8 @@ const App = (() => {
     }
 
     function getCurrentDisplayedItems() {
-        // Reconstruct from the grid
-        const ids = Array.from(grid.querySelectorAll('.card')).map(c => c.dataset.id);
+        // Reconstruct from the grid (ignore back-card, add-card)
+        const ids = Array.from(grid.querySelectorAll('.card')).map(c => c.dataset.id).filter(Boolean);
         // Find matching items in data tree
         function findItems(items) {
             const itemIds = items.map(i => i.id);
@@ -151,7 +256,6 @@ const App = (() => {
 
     // ==================== Global Events ====================
     function bindGlobalEvents() {
-        btnBack.addEventListener('click', goBack);
         btnSettings.addEventListener('click', openSettings);
         document.getElementById('btn-close-modal').addEventListener('click', closeSettings);
         document.getElementById('btn-close-edit').addEventListener('click', closeEditModal);
@@ -163,6 +267,13 @@ const App = (() => {
         document.getElementById('btn-reset-image').addEventListener('click', resetImage);
         document.getElementById('btn-reset-sound').addEventListener('click', resetSound);
         document.getElementById('edit-image-input').addEventListener('change', handleImageUpload);
+        document.getElementById('btn-delete-symbol').addEventListener('click', () => {
+            if (currentEditItem && isCustomItem(currentEditItem.id)) {
+                if (confirm(I18N.t('deleteConfirm'))) {
+                    deleteCustomSymbol(currentEditItem.id);
+                }
+            }
+        });
 
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettings(); });
         editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
@@ -208,6 +319,10 @@ const App = (() => {
                     <label>${t('resetAll')}</label>
                     <span style="font-size:1.2rem">🗑️</span>
                 </li>
+                <li class="settings-item" id="settings-offline-info">
+                    <label>${t('offlineInfo')}</label>
+                    <span style="font-size:1.2rem">📲</span>
+                </li>
             </ul>
             <div style="margin-top:16px;padding:12px;background:#f0f4f8;border-radius:10px;">
                 <p style="font-size:0.85rem;color:#64748b;line-height:1.5;">
@@ -230,20 +345,45 @@ const App = (() => {
         document.getElementById('toggle-edit').addEventListener('change', (e) => {
             editMode = e.target.checked;
             document.body.classList.toggle('edit-mode', editMode);
+            refreshCurrentView();
         });
 
         document.getElementById('settings-reset-all').addEventListener('click', async () => {
             if (confirm(t('resetConfirm'))) {
                 await StorageManager.clearAll();
                 customizationsCache = {};
+                customItemsMap = {};
+                saveCustomItems();
                 navigationStack = [];
                 renderLevel(APP_DATA.categories, I18N.t('appTitle'));
                 closeSettings();
             }
         });
 
+        document.getElementById('settings-offline-info').addEventListener('click', () => {
+            showOfflineInfo();
+        });
+
         document.getElementById('modal-title').textContent = t('settings');
         settingsModal.hidden = false;
+    }
+
+    function showOfflineInfo() {
+        const t = I18N.t.bind(I18N);
+        const body = document.getElementById('modal-body');
+        body.innerHTML = `
+            <div class="offline-info">
+                <p style="margin-bottom:16px;font-size:1rem;line-height:1.6;">${t('offlineIntro')}</p>
+                <div class="offline-platform">${t('offlineAndroid')}</div>
+                <div class="offline-platform">${t('offlineIOS')}</div>
+                <div class="offline-platform">${t('offlineWindows')}</div>
+                <div class="offline-platform">${t('offlineMac')}</div>
+                <div style="margin-top:16px;padding:12px;background:#ecfdf5;border-radius:10px;">
+                    <p style="font-size:0.9rem;color:#166534;line-height:1.5;">✅ ${t('offlineHint')}</p>
+                </div>
+            </div>
+        `;
+        document.getElementById('modal-title').textContent = t('offlineTitle');
     }
 
     function closeSettings() { settingsModal.hidden = true; }
@@ -251,6 +391,7 @@ const App = (() => {
     // ==================== Edit Modal ====================
     function openEditModal(item) {
         currentEditItem = item;
+        isCreatingNew = false;
         const custom = customizationsCache[item.id];
         const t = I18N.t.bind(I18N);
 
@@ -262,6 +403,13 @@ const App = (() => {
         } else {
             preview.innerHTML = '';
             preview.textContent = item.emoji;
+        }
+
+        // Show/hide delete button for custom items
+        const delBtn = document.getElementById('btn-delete-symbol');
+        if (delBtn) {
+            delBtn.hidden = !isCustomItem(item.id);
+            delBtn.textContent = t('deleteSymbol');
         }
 
         // Update UI text for current language
@@ -291,9 +439,61 @@ const App = (() => {
         editModal.hidden = false;
     }
 
+    function openCreateModal() {
+        isCreatingNew = true;
+        currentEditItem = {
+            id: 'custom-' + Date.now(),
+            emoji: '⭐',
+            i18n: {
+                de: { label: '', speech: '' },
+                en: { label: '', speech: '' },
+                tr: { label: '', speech: '' },
+                uk: { label: '', speech: '' },
+                ru: { label: '', speech: '' },
+            }
+        };
+        const t = I18N.t.bind(I18N);
+
+        document.getElementById('edit-modal-title').textContent = t('newSymbolTitle');
+
+        const preview = document.getElementById('edit-image-preview');
+        preview.innerHTML = '';
+        preview.textContent = '⭐';
+
+        document.querySelector('#edit-modal-body .edit-section:nth-child(1) h3').textContent = t('changeImage');
+        document.querySelector('#edit-modal-body .file-upload-btn').childNodes[0].textContent = t('chooseImage') + ' ';
+        document.getElementById('btn-reset-image').textContent = t('resetImage');
+        document.querySelector('#edit-modal-body .edit-section:nth-child(2) h3').textContent = t('changeText');
+        document.getElementById('edit-label-input').placeholder = t('labelPlaceholder');
+        document.getElementById('edit-speech-input').placeholder = t('speechPlaceholder');
+        document.querySelector('#edit-modal-body .edit-section:nth-child(3) h3').textContent = t('changeSound');
+        document.getElementById('btn-record').textContent = t('record');
+        document.getElementById('btn-stop-record').textContent = t('stop');
+        document.getElementById('btn-play-custom').textContent = t('listen');
+        document.getElementById('btn-reset-sound').textContent = t('resetSound');
+        document.getElementById('btn-save-edit').textContent = t('save');
+        document.getElementById('btn-cancel-edit').textContent = t('cancel');
+
+        document.getElementById('edit-label-input').value = '';
+        document.getElementById('edit-speech-input').value = '';
+
+        recordedChunks = [];
+        document.getElementById('btn-play-custom').hidden = true;
+        document.getElementById('btn-stop-record').hidden = true;
+        document.getElementById('btn-record').hidden = false;
+        document.getElementById('recording-status').textContent = '';
+
+        // Show/hide delete button
+        const delBtn = document.getElementById('btn-delete-symbol');
+        if (delBtn) delBtn.hidden = true;
+
+        editModal.hidden = false;
+    }
+
     function closeEditModal() {
         editModal.hidden = true;
         currentEditItem = null;
+        isCreatingNew = false;
         stopRecordingIfActive();
     }
 
@@ -306,10 +506,48 @@ const App = (() => {
     async function saveEdit() {
         if (!currentEditItem) return;
         const itemId = currentEditItem.id;
-        const existing = customizationsCache[itemId] || {};
         const label = document.getElementById('edit-label-input').value.trim();
         const speech = document.getElementById('edit-speech-input').value.trim();
 
+        if (isCreatingNew) {
+            // Creating a new custom symbol
+            if (!label) return; // require at least a label
+            const lang = I18N.getLang();
+            const newItem = {
+                id: itemId,
+                emoji: '⭐',
+                i18n: {
+                    de: { label: label, speech: speech || label },
+                    en: { label: label, speech: speech || label },
+                    tr: { label: label, speech: speech || label },
+                    uk: { label: label, speech: speech || label },
+                    ru: { label: label, speech: speech || label },
+                }
+            };
+            // Override the current language with proper values
+            newItem.i18n[lang] = { label: label, speech: speech || label };
+
+            if (!customItemsMap[currentParentId]) customItemsMap[currentParentId] = [];
+            customItemsMap[currentParentId].push(newItem);
+            saveCustomItems();
+
+            // Save customization (image/sound) if any
+            const existing = customizationsCache[itemId] || {};
+            const data = { label, speech: speech || label };
+            if (existing.image) data.image = existing.image;
+            if (recordedChunks.length > 0) {
+                const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                data.sound = await blobToBase64(blob);
+            }
+            await StorageManager.saveCustomization(itemId, data);
+            customizationsCache[itemId] = { id: itemId, ...data };
+            refreshCurrentView();
+            closeEditModal();
+            return;
+        }
+
+        // Normal edit flow
+        const existing = customizationsCache[itemId] || {};
         const txt = getItemText(currentEditItem);
         const data = {
             label: label || txt.label,
@@ -328,6 +566,29 @@ const App = (() => {
         customizationsCache[itemId] = { id: itemId, ...data };
         refreshCurrentView();
         closeEditModal();
+    }
+
+    function deleteCustomSymbol(itemId) {
+        for (const [parentId, items] of Object.entries(customItemsMap)) {
+            const idx = items.findIndex(i => i.id === itemId);
+            if (idx !== -1) {
+                items.splice(idx, 1);
+                if (items.length === 0) delete customItemsMap[parentId];
+                saveCustomItems();
+                StorageManager.deleteCustomization(itemId);
+                delete customizationsCache[itemId];
+                refreshCurrentView();
+                closeEditModal();
+                return;
+            }
+        }
+    }
+
+    function isCustomItem(itemId) {
+        for (const items of Object.values(customItemsMap)) {
+            if (items.some(i => i.id === itemId)) return true;
+        }
+        return false;
     }
 
     function refreshCurrentView() {

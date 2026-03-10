@@ -1,5 +1,5 @@
 /**
- * KommUnikation – Multilingual Data (de, en, tr, uk, ru)
+ * Tell Pal – Multilingual Data (de, en, tr, uk, ru)
  * Each item has i18n: { lang: { label, speech } }
  * Helper: getItemText(item) returns { label, speech } for current language
  */

@@ -1,4 +1,4 @@
-# Beitragen zu KommUnikation
+# Beitragen zu Tell Pal
 
 Vielen Dank für dein Interesse! Hier erfährst du, wie du zum Projekt beitragen kannst.
 
@@ -57,8 +57,8 @@ Verfügbare Farben: `red`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`
 
 ```bash
 # Repository klonen
-git clone https://github.com/DEIN-USERNAME/KommunikationsApp.git
-cd KommunikationsApp
+git clone https://github.com/DEIN-USERNAME/TellPal.git
+cd TellPal
 
 # Lokalen Server starten
 python -m http.server 8080

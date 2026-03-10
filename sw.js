@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kommunikation-v1';
+const CACHE_NAME = 'tellpal-v2';
 const ASSETS = [
     './',
     './index.html',
