@@ -25,6 +25,7 @@ const App = (() => {
         await loadCustomItems();
         renderLevel(APP_DATA.categories, I18N.t('appTitle'));
         bindGlobalEvents();
+        bindOfflineInfoButton();
     }
 
     async function loadCustomizations() {
@@ -386,6 +387,16 @@ const App = (() => {
     }
 
     function closeSettings() { settingsModal.hidden = true; }
+
+    function bindOfflineInfoButton() {
+        const btn = document.getElementById('btn-offline-info');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                showOfflineInfo();
+                settingsModal.hidden = false;
+            });
+        }
+    }
 
     // ==================== Edit Modal ====================
     function openEditModal(item) {
